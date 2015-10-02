@@ -1,0 +1,37 @@
+{
+  "manifest": "1",
+  "version": "0.0.1",
+  "client_id": "1437266495",
+  "locale": {
+    "default": "en-us",
+    "supported": ["en-us"]
+  },
+  "elements": [
+    {
+      "path": "files",
+      "name": "Conference Agenda",
+      "version": "0.0.1",
+      "settings": {
+        "config": {
+          "autopop": true
+        },
+        "properties": [
+          {
+            "type": "group",
+            "name": "conference-settings",
+            "label": "Conference",
+            "properties": [
+              {
+                "name": "sessions",
+                "label": "Number of Sesssions",
+                "type": "int",
+                "default": 1,
+                "min": 0
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+.agenda {
+	border-collapse: collapse;
+
+	th {
+		background-color: #333;
+		color: #FFF;
+	}
+
+	th, td {
+		border: 1px solid #CCC;
+	}
+}
