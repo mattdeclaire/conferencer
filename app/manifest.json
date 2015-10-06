@@ -22,6 +22,11 @@
             "label": "Conference",
             "properties": [
               {
+                "name": "name",
+                "label": "Conference Name",
+                "type": "string"
+              },
+              {
                 "name": "sessions",
                 "label": "Number of Sesssions",
                 "type": "int",
