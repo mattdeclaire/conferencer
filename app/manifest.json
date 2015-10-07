@@ -2,6 +2,9 @@
   "manifest": "1",
   "version": "0.0.1",
   "client_id": "1437266495",
+  "callback_url" : "http://conferencer.dev/oauth2",
+  "manage_app_url" : "http://conferencer.dev/manage",
+  "oauth_final_destination" : "editor",
   "locale": {
     "default": "en-us",
     "supported": ["en-us"]
