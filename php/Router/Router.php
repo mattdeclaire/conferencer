@@ -2,6 +2,8 @@
 
 namespace Router;
 
+use \API\AccessToken;
+
 class Router
 {
 	protected $path;
@@ -87,7 +89,9 @@ class Router
 			$access_token = $result->access_token;
 			$callback_url = $result->callback_url;
 
-			// TODO: save access token
+			$token = AccessToken::findOrCreate($user_id, $site_id);
+			$token->access_token = $access_token;
+			$token->save();
 
 			header("Location: $callback_url");
 		} else {
