@@ -16,7 +16,7 @@ function vebug() {
 	echo "</pre>";
 }
 
-function post($url, $params = [], $headers = [])
+function curl($url, $opts = [], $headers = [])
 {
 	$curl = curl_init();
 
@@ -25,12 +25,10 @@ function post($url, $params = [], $headers = [])
 		$headerPairs[] = "$key: $value";
 	}
 
-	curl_setopt_array($curl, [
+	curl_setopt_array($curl, $opts + [
 		CURLOPT_URL => $url,
 		CURLOPT_FOLLOWLOCATION => true,
 		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_POST => true,
-		CURLOPT_POSTFIELDS => http_build_query($params),
 		CURLOPT_HTTPHEADER => $headerPairs,
 	]);
 
@@ -39,4 +37,17 @@ function post($url, $params = [], $headers = [])
 	curl_close($curl);
 
 	return $response;
+}
+
+function get($url, $params = [], $headers = [])
+{
+	return curl($url.'?'.http_build_query($params), [], $headers);
+}
+
+function post($url, $params = [], $headers = [])
+{
+	return curl($url, [
+		CURLOPT_POST => true,
+		CURLOPT_POSTFIELDS => http_build_query($params),
+	], $headers);
 }
