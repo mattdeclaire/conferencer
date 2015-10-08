@@ -48,6 +48,6 @@ function post($url, $params = [], $headers = [])
 {
 	return curl($url, [
 		CURLOPT_POST => true,
-		CURLOPT_POSTFIELDS => http_build_query($params),
+		CURLOPT_POSTFIELDS => json_encode($params),
 	], $headers);
 }
