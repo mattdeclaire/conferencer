@@ -3,13 +3,11 @@
 namespace Router;
 
 use \API\AccessToken;
+use \Controller\OauthController;
 
 class Router
 {
-	protected $path;
-	protected $query;
-
-	public function __construct($url = false)
+	public function handle($url = false)
 	{
 		if (!$url) {
 			$url = $_SERVER['REQUEST_URI'];
@@ -20,81 +18,47 @@ class Router
 		$path = $info['path'];
 		$path = preg_replace("/\/$/", "", $path);
 		$path = $path ?: "/";
-		$this->path = $path;
 
 		parse_str($info['query'], $query);
-		$this->query = $query;
-	}
 
-	public function handle()
-	{
-		switch ($this->path) {
-			case '/oauth2': return $this->oauth2();
-			default: return $this->notFound();
+		switch ($path) {
+			case '/oauth2': $this->oauth($query); break;
+			default: return self::error();
 		}
 	}
 
-	protected function notFound()
-	{
-		header("HTTP/1.0 404 Not Found");
-		echo "Not Found";
-	}
-
-	protected function oauth2()
+	protected function oauth($query)
 	{
 		$user_id = $timestamp = $site_id = $hmac = $callback_url = $authorization_code = false;
-		extract($this->query, EXTR_IF_EXISTS);
+		extract($query, EXTR_IF_EXISTS);
 
+		$controller = new OauthController();
 		if ($hmac) {
-			$string = http_build_query(compact('user_id', 'timestamp', 'site_id'));
-			$hash = hash_hmac('sha256', $string, WEEBLY_SECRET);
-
-			if ($hash != $hmac) {
-				header("HTTP/1.0 417 Expectation Failed");
-				echo "Invalid HMAC";
-				return;
-			}
-
-			$scopes = [
-				'read:site',
-				'write:site',
-			];
-
-			$url = "$callback_url?".http_build_query([
-				'client_id' => WEEBLY_CLIENT_ID,
-				'user_id' => $user_id,
-				'site_id' => $site_id,
-				'scope' => implode(',', $scopes),
-			]);
-
-			$this->redirect($url);
+			$controller->requestScope($user_id, $site_id, $timestamp, $hmac, $callback_url);
 		} else if ($authorization_code) {
-			$response = post($callback_url, [
-				'client_id' => WEEBLY_CLIENT_ID,
-				'client_secret' => WEEBLY_SECRET,
-				'authorization_code' => $authorization_code,
-			]);
-
-			$result = json_decode($response);
-
-			$access_token = $result->access_token;
-			$callback_url = $result->callback_url;
-
-			$token = AccessToken::findOrCreate($user_id, $site_id);
-			$token->access_token = $access_token;
-			$token->save();
-
-			$this->redirect($callback_url);
+			$controller->requestAccess($user_id, $site_id, $authorization_code, $callback_url);
 		} else {
-			die('nope');
+			self::error("invalid oauth request", 400);
 		}
 	}
 
-	protected function redirect($url) {
+	public static function redirect($url) {
 		if (defined('OAUTH_TEST') && OAUTH_TEST) {
 			echo "<a href='$url'>$url</a>";
 		} else {
 			header("Location: $url");
 		}
+		exit;
+	}
+
+	public static function error($msg = "Not Found", $code = 404)
+	{
+		switch ($code) {
+			case 400: header("HTTP/1.1 400 Bad Request"); break;
+			case 417: header("HTTP/1.1 417 Expectation Failed"); break;
+			default: header("HTTP/1.1 404 Not Found"); break;
+		}
+
+		die($msg);
 	}
 }
