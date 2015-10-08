@@ -67,25 +67,16 @@ class Router
 				'scope' => implode(',', $scopes),
 			]);
 
-			header("Location: $url");
+			$this->redirect($url);
 		} else if ($authorization_code) {
-			$curl = curl_init();
-
-			curl_setopt_array($curl, [
-				CURLOPT_URL => $callback_url,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_POST => true,
-				CURLOPT_POSTFIELDS => http_build_query([
-					'client_id' => WEEBLY_CLIENT_ID,
-					'client_secret' => WEEBLY_SECRET,
-					'authorization_code' => $authorization_code,
-				]),
+			$response = post($callback_url, [
+				'client_id' => WEEBLY_CLIENT_ID,
+				'client_secret' => WEEBLY_SECRET,
+				'authorization_code' => $authorization_code,
 			]);
 
-			$response = curl_exec($curl);
-			curl_close($curl);
-
 			$result = json_decode($response);
+
 			$access_token = $result->access_token;
 			$callback_url = $result->callback_url;
 
@@ -93,9 +84,17 @@ class Router
 			$token->access_token = $access_token;
 			$token->save();
 
-			header("Location: $callback_url");
+			$this->redirect($callback_url);
 		} else {
 			die('nope');
+		}
+	}
+
+	protected function redirect($url) {
+		if (defined('OAUTH_TEST') && OAUTH_TEST) {
+			echo "<a href='$url'>$url</a>";
+		} else {
+			header("Location: $url");
 		}
 	}
 }
