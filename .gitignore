@@ -1,4 +1,5 @@
 .DS_Store
 /config.php
 /log
-/www/test.php
+/www/test/
+/www/js-dev
