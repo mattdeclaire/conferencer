@@ -1,9 +1,11 @@
 define([
 	'jquery',
-	'mustache'
+	'mustache',
+	'tpl!agenda'
 ], function(
 	$,
-	Mustache
+	Mustache,
+	agendaTpl
 ) {
 	var sessions = [
 		{ start: 1444060800, end: 1444064400, title: "Code Rules", speaker: "Matt DeClaire", summary: lorem },
@@ -58,8 +60,7 @@ define([
 	});
 
 	$(function() {
-		var template = $('#agenda-template').html(),
-			html = Mustache.render(template, conference);
+		var html = Mustache.render(agendaTpl, conference);
 		$('#agenda').html(html);
 	});
 });

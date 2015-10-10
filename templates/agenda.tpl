@@ -1,0 +1,24 @@
+<table class="conferencer-agenda">
+	<thead>
+		<tr>
+			<th></th>
+			{{#tracks}}
+				<th>{{name}}</th>
+			{{/tracks}}
+		</tr>
+	</thead>
+	<tbody>
+		{{#timeslots}}
+			<tr>
+				<td>{{name}}</td>
+				{{#sessions}}
+					<td>
+						<h2>{{title}}</h2>
+						<h3>{{speaker}}</h3>
+						<p>{{summary}}</p>
+					</td>
+				{{/sessions}}
+			</tr>
+		{{/timeslots}}
+	</tbody>
+</table>
