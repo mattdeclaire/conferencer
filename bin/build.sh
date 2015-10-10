@@ -1,0 +1,1 @@
+node js/r.js -o js/build.js
