@@ -1,66 +1,96 @@
 define([
 	'jquery',
 	'mustache',
+	'moment',
 	'tpl!agenda'
 ], function(
 	$,
 	Mustache,
+	moment,
 	agendaTpl
 ) {
 	var sessions = [
-		{ start: 1444060800, end: 1444064400, title: "Code Rules", speaker: "Matt DeClaire", summary: lorem },
-		{ start: 1444060800, end: 1444064400, title: "Subtlety", speaker: "Katie DeClaire", summary: lorem },
-		{ start: 1444060800, end: 1444064400, title: "Super Chickens", speaker: "Ellie DeClaire", summary: lorem },
-		{ start: 1444064400, end: 1444068000, title: "Architecture", speaker: "Matt DeClaire", summary: lorem },
-		{ start: 1444064400, end: 1444068000, title: "Inference", speaker: "Katie DeClaire", summary: lorem },
-		{ start: 1444064400, end: 1444068000, title: "Motivation", speaker: "Ellie DeClaire", summary: lorem },
-		{ start: 1444068000, end: 1444071600, title: "TDD", speaker: "Matt DeClaire", summary: lorem },
-		{ start: 1444068000, end: 1444071600, title: "Clarity", speaker: "Katie DeClaire", summary: lorem },
-		{ start: 1444068000, end: 1444071600, title: "GTD", speaker: "Ellie DeClaire", summary: lorem }
+		{ start: 1444064400, end: 1444068000, track: "Engineering", title: "Architecture", speaker: "Matt DeClaire" },
+		{ start: 1444064400, end: 1444068000, track: "Design", title: "Inference", speaker: "Katie DeClaire" },
+		{ start: 1444064400, end: 1444068000, track: "Management", title: "Motivation", speaker: "Ellie DeClaire" },
+		{ start: 1444060800, end: 1444064400, track: "Engineering", title: "Code Rules", speaker: "Matt DeClaire" },
+		{ start: 1444060800, end: 1444064400, track: "Design", title: "Subtlety", speaker: "Katie DeClaire" },
+		{ start: 1444060800, end: 1444064400, track: "Management", title: "Super Chickens", speaker: "Ellie DeClaire" },
+		{ start: 1444068000, end: 1444071600, track: "Engineering", title: "TDD", speaker: "Matt DeClaire" },
+		{ start: 1444068000, end: 1444071600, track: "Design", title: "Clarity", speaker: "Katie DeClaire" },
+		{ start: 1444068000, end: 1444071600, track: "Management", title: "GTD", speaker: "Ellie DeClaire" }
 	];
 
-	var lorem = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-
-	var conference = {
-		tracks: [
-			{ name: "Engineering" },
-			{ name: "Design" },
-			{ name: "Management" }
-		],
-		timeslots: [
-			{
-				name: "9:00-10:00",
-				sessions: [
-					{ title: "Code Rules", speaker: "Matt DeClaire", summary: lorem },
-					{ title: "Subtlety", speaker: "Katie DeClaire", summary: lorem },
-					{ title: "Super Chickens", speaker: "Ellie DeClaire", summary: lorem }
-				]
-			},
-			{
-				name: "10:00-11:00",
-				sessions: [
-					{ title: "Architecture", speaker: "Matt DeClaire", summary: lorem },
-					{ title: "Inference", speaker: "Katie DeClaire", summary: lorem },
-					{ title: "Motivation", speaker: "Ellie DeClaire", summary: lorem }
-				]
-			},
-			{
-				name: "11:00-12:00",
-				sessions: [
-					{ title: "TDD", speaker: "Matt DeClaire", summary: lorem },
-					{ title: "Clarity", speaker: "Katie DeClaire", summary: lorem },
-					{ title: "GTD", speaker: "Ellie DeClaire", summary: lorem }
-				]
-			}
-		]
-	};
-
-	$.each(sessions, function(ndx, session) {
-		// var name = 
+	// Sort timeslots so that the agenda wil be in the right order
+	sessions.sort(function(a, b) {
+		return a.start - b.start;
 	});
 
+	// Add human readable timeslots to sessions
+	$.each(sessions, function(ndx, session) {
+		var format = 'h:mm a',
+			start = moment.unix(session.start).format(format),
+			end = moment.unix(session.end).format(format);
+		session.timeslot = start + ' - ' + end;
+	});
+
+	// Get a sorted and unique list of tracks.
+
+	var tracks = $.map(sessions, function(session) {
+		return session.track;
+	});
+
+	tracks.sort();
+
+	tracks = $.unique(tracks);
+
+	// Get a unique list of timeslots.
+
+	var timeslots = $.map(sessions, function(session) {
+		return session.timeslot;
+	});
+
+	timeslots = $.unique(timeslots);
+
+	// Create agenda
+
+	var agenda = {};
+
+	$.each(sessions, function(ndx, session) {
+		var timeslot = session.timeslot,
+			track = session.track;
+		agenda[timeslot] = agenda[timeslot] || {};
+		agenda[timeslot][track] = agenda[timeslot][track] || [];
+		agenda[timeslot][track].push(session);
+	});
+
+	// Create Mustache view model
+
+	var agendaViewModel = {
+		tracks: tracks,
+		timeslots: []
+	};
+
+	$.each(agenda, function(timeslot, tracks) {
+		var tracksViewModel = [];
+
+		$.each(tracks, function(track, sessions) {
+			tracksViewModel.push({
+				name: track,
+				sessions: sessions
+			});
+		});
+
+		agendaViewModel.timeslots.push({
+			name: timeslot,
+			tracks: tracksViewModel
+		});
+	});
+
+	// Output agenda
+
 	$(function() {
-		var html = Mustache.render(agendaTpl, conference);
+		var html = Mustache.render(agendaTpl, agendaViewModel);
 		$('#agenda').html(html);
 	});
 });

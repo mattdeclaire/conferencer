@@ -3,7 +3,7 @@
 		<tr>
 			<th></th>
 			{{#tracks}}
-				<th>{{name}}</th>
+				<th>{{.}}</th>
 			{{/tracks}}
 		</tr>
 	</thead>
@@ -11,13 +11,14 @@
 		{{#timeslots}}
 			<tr>
 				<td>{{name}}</td>
-				{{#sessions}}
+				{{#tracks}}
 					<td>
-						<h2>{{title}}</h2>
-						<h3>{{speaker}}</h3>
-						<p>{{summary}}</p>
+						{{#sessions}}
+							<h2>{{title}}</h2>
+							<h3>{{speaker}}</h3>
+						{{/sessions}}
 					</td>
-				{{/sessions}}
+				{{/tracks}}
 			</tr>
 		{{/timeslots}}
 	</tbody>
