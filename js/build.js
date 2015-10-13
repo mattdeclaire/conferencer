@@ -14,7 +14,7 @@
 		}
 	},
 	paths: {
-		'requireLib': 'require'
+		'requireLib': 'vendor/require'
 	},
 	wrap: true,
 	include: [

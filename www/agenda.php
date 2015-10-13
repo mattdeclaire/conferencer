@@ -4,7 +4,7 @@
 <head>
 	<title>Agenda</title>
 	<?php if (DEV): ?>
-		<script src="/js-dev/require.js" data-main="/js-dev/app"></script>
+		<script src="/js-dev/vendor/require.js" data-main="/js-dev/app"></script>
 	<?php else: ?>
 		<script src="/js/app.js"></script>
 	<?php endif; ?>

@@ -1,1 +1,1 @@
-node js/r.js -o js/build.js
+node js/vendor/r.js -o js/build.js
