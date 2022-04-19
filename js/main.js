@@ -1,24 +1,22 @@
 define([
 	'jquery',
 	'mustache',
-	'moment',
 	'tpl!agenda'
 ], function(
 	$,
 	Mustache,
-	moment,
 	agendaTpl
 ) {
 	var sessions = [
-		{ start: 1444064400, end: 1444068000, track: "Engineering", title: "Architecture", speaker: "Matt DeClaire" },
-		{ start: 1444064400, end: 1444068000, track: "Design", title: "Inference", speaker: "Katie DeClaire" },
-		{ start: 1444064400, end: 1444068000, track: "Management", title: "Motivation", speaker: "Ellie DeClaire" },
-		{ start: 1444060800, end: 1444064400, track: "Engineering", title: "Code Rules", speaker: "Matt DeClaire" },
-		{ start: 1444060800, end: 1444064400, track: "Design", title: "Subtlety", speaker: "Katie DeClaire" },
-		{ start: 1444060800, end: 1444064400, track: "Management", title: "Super Chickens", speaker: "Ellie DeClaire" },
-		{ start: 1444068000, end: 1444071600, track: "Engineering", title: "TDD", speaker: "Matt DeClaire" },
-		{ start: 1444068000, end: 1444071600, track: "Design", title: "Clarity", speaker: "Katie DeClaire" },
-		{ start: 1444068000, end: 1444071600, track: "Management", title: "GTD", speaker: "Ellie DeClaire" }
+		{ start: 1444064400000, end: 1444068000000, track: "Engineering", title: "Architecture", speaker: "Matt DeClaire" },
+		{ start: 1444064400000, end: 1444068000000, track: "Design", title: "Inference", speaker: "Katie DeClaire" },
+		{ start: 1444064400000, end: 1444068000000, track: "Management", title: "Motivation", speaker: "Ellie DeClaire" },
+		{ start: 1444060800000, end: 1444064400000, track: "Engineering", title: "Code Rules", speaker: "Matt DeClaire" },
+		{ start: 1444060800000, end: 1444064400000, track: "Design", title: "Subtlety", speaker: "Katie DeClaire" },
+		{ start: 1444060800000, end: 1444064400000, track: "Management", title: "Super Chickens", speaker: "Ellie DeClaire" },
+		{ start: 1444068000000, end: 1444071600000, track: "Engineering", title: "TDD", speaker: "Matt DeClaire" },
+		{ start: 1444068000000, end: 1444071600000, track: "Design", title: "Clarity", speaker: "Katie DeClaire" },
+		{ start: 1444068000000, end: 1444071600000, track: "Management", title: "GTD", speaker: "Ellie DeClaire" }
 	];
 
 	// Sort timeslots so that the agenda wil be in the right order
@@ -28,9 +26,8 @@ define([
 
 	// Add human readable timeslots to sessions
 	$.each(sessions, function(ndx, session) {
-		var format = 'h:mm a',
-			start = moment.unix(session.start).format(format),
-			end = moment.unix(session.end).format(format);
+		var start = (new Date(session.start)).toLocaleTimeString('en-US'),
+		   end = (new Date(session.end)).toLocaleTimeString('en-US');
 		session.timeslot = start + ' - ' + end;
 	});
 
