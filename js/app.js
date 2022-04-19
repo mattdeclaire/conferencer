@@ -4,8 +4,7 @@ require.config({
 		'jquery': 'vendor/jquery-2.1.4',
 		'mustache': 'vendor/mustache',
 		'text': 'vendor/text',
-		'tpl': 'vendor/tpl',
-		'moment': 'vendor/moment'
+		'tpl': 'vendor/tpl'
 	}
 });
 
